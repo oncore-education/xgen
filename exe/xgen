@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'xgen'
+require 'yaml'
+require 'erb'
+
+options = {:template => nil, :input => nil, :output => nil, :platform => nil}
+
+descriptions = {
+    :template => "The temnplate that you want to generate: [colors]",
+    :input => "the input file",
+    :output => "the output file",
+    :platform => "[ts, swift]"
+}
+
+parser = OptionParser.new do|opts|
+  opts.banner = "Usage: xgen.rb [options]"
+
+  options.each do |key, value|
+    opts.on("-#{key.to_s[0,1]}", "--#{key} #{key}", "#{descriptions[key]}") do |op|
+      options[key] = op;
+    end
+  end
+
+  opts.on('-h', '--help', 'Displays Help') do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+
+# options.each do |key, value|
+#   if options[key] == nil
+#     print "Enter #{key}: "
+#     options[key] = gets.chomp
+#   end
+# end
+
+options.each do |key, value|
+  puts options[key]
+end
+
+input = options[:input] || "/Data/colors.yaml"
+output = options[:output] || "/Data/colors.sass"
+platform = options[:platform] || "sass"
+template = options[:template] || "colors"
+
+if template == "colors"
+  source = YAML.load_file(input)
+  colors = []
+  join_on = "\n"
+
+  if platform == "sass"
+    join_on = ",\n"
+  end
+  source.each do |key, value|
+    if platform == "ts"
+      colors << "  static #{key}: string ='#{value}';"
+    elsif platform == "sass"
+      colors << "  (name: '#{key}', value: '#{value}')"
+    end
+  end
+
+  Xgen::Util.erb_template("colors.#{platform}", output, {colors: colors.join(join_on)})
+
+end
+

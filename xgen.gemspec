@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jacob Bullock"]
   spec.email         = ["jacob.bullock@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because RubyGems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = "lorem"
+  spec.description   = "ipsum"
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
   spec.license       = "MIT"
 
@@ -23,10 +23,11 @@ Gem::Specification.new do |spec|
       "public gem pushes."
   end
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files         = `git ls-files -z`.split("\x0").reject{ |f|
     f.match(%r{^(test|spec|features)/})
-  end
+  } + Dir["exe/**/*"] + Dir["lib/template/**/*.*"]
   spec.bindir        = "exe"
+  spec.default_executable = "xgen"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
